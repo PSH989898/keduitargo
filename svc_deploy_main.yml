@@ -1,0 +1,41 @@
+---
+# svc-shop -> cluster ip 라서 type은 안정해도 됨
+kind: Service
+apiVersion: v1
+metadata:
+  name:  svc-main
+spec:
+  selector:
+    app: main
+  ports:
+  - port: 80
+    targetPort: 80
+
+
+---
+# deploy-main
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: main
+  template:
+    metadata:
+      labels:
+        app: main
+    spec:
+      imagePullSecrets:
+      - name: dockerhub-secret
+      containers:
+      - name: main
+        image: pshhhhh98/portal:main
+        resources:
+          limits:
+            memory: "64Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 80

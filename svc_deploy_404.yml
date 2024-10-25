@@ -1,0 +1,41 @@
+---
+# svc-404error -> cluster ip 라서 type은 안정해도 됨
+kind: Service
+apiVersion: v1
+metadata:
+  name:  svc-503error
+spec:
+  selector:
+    app: 503error
+  ports:
+  - port: 80
+    targetPort: 80
+
+
+---
+# deploy-404error
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 503error
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: 503error
+  template:
+    metadata:
+      labels:
+        app: 503error
+    spec:
+      imagePullSecrets:
+      - name: dockerhub-secret
+      containers:
+      - name: 503error
+        image: pshhhhh98/portal:503error
+        resources:
+          limits:
+            memory: "64Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 80 #pod로 갈 포트이기때문에 80으로 맞춰줘야함

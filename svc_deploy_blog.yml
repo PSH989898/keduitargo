@@ -1,0 +1,41 @@
+---
+# svc-shop -> cluster ip 라서 type은 안정해도 됨
+kind: Service
+apiVersion: v1
+metadata:
+  name:  svc-blog
+spec:
+  selector:
+    app: blog
+  ports:
+  - port: 80
+    targetPort: 80
+
+
+---
+# deploy-blog
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: blog
+  template:
+    metadata:
+      labels:
+        app: blog
+    spec:
+      imagePullSecrets:
+      - name: dockerhub-secret
+      containers:
+      - name: blog
+        image: pshhhhh98/portal:blog
+        resources:
+          limits:
+            memory: "64Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 80

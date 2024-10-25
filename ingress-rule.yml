@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-portal
+  annotations: #index.html을 nginx의 기본경로로 지정하기
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: www.test.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/shop(/|$)"  # /shop 또는 /shop/ 요청
+        backend:
+          service:
+            name: svc-shop
+            port:
+              number: 80
+      - pathType: Prefix
+        path: "/blog(/|$)"  # /blog 또는 /blog/ 요청
+        backend:
+          service:
+            name: svc-blog
+            port:
+              number: 80
+      - pathType: Prefix
+        path: "/?$"  # 메인 페이지 요청
+        backend:
+          service:
+            name: svc-main
+            port:
+              number: 80
+      - pathType: Prefix
+        path: "/*"  # 모든 다른 요청은 503 에러 페이지
+        backend:
+          service:
+            name: svc-503error
+            port:
+              number: 80
